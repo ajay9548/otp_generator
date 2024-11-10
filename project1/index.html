@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        p {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>OTP Verification</h2>
+
+        <label for="emailInput">Enter Your Email:</label>
+        <input type="email" id="emailInput" placeholder="Enter your email" required>
+        <button onclick="generateOTP()">Generate OTP</button>
+
+        <p id="otpMessage"></p>
+
+        <h3>Verify OTP</h3>
+        <input type="text" id="otpInput" placeholder="Enter OTP" required>
+        <button onclick="verifyOTP()">Verify OTP</button>
+
+        <p id="verificationMessage"></p>
+    </div>
+
+    <script>
+        async function generateOTP() {
+            const email = document.getElementById("emailInput").value;
+            if (!email) {
+                alert("Please enter a valid email address.");
+                return;
+            }
+
+            const response = await fetch('http://127.0.0.1:5000/generate_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            const data = await response.json();
+            document.getElementById("otpMessage").innerText = data.message + " (Check your email)";
+        }
+
+        async function verifyOTP() {
+            const otp = document.getElementById("otpInput").value;
+            if (!otp) {
+                alert("Please enter the OTP.");
+                return;
+            }
+
+            const response = await fetch('http://127.0.0.1:5000/verify_otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp: otp })
+            });
+
+            const data = await response.json();
+            document.getElementById("verificationMessage").innerText = data.message;
+        }
+    </script>
+</body>
+</html>
